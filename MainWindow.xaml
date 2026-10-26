@@ -1,0 +1,675 @@
+<Window x:Class="FPSBoostPro.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="FPSBoost Pro - Otimizador de FPS &amp; Latência (Rust, CS2, PUBG)"
+        Height="740" Width="1040"
+        MinHeight="620" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="#0A0A0E">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Admin Banner -->
+            <RowDefinition Height="60"/>   <!-- Header -->
+            <RowDefinition Height="*"/>    <!-- Content Area -->
+            <RowDefinition Height="36"/>   <!-- Status Bar -->
+        </Grid.RowDefinitions>
+
+        <!-- 1. ADMIN WARNING BANNER -->
+        <Border x:Name="AdminBanner" Grid.Row="0" Background="#2E0A10" BorderBrush="#FF1E42" BorderThickness="0,0,0,1" Padding="14,6" Visibility="Collapsed">
+            <DockPanel LastChildFill="True">
+                <Button DockPanel.Dock="Right" Style="{StaticResource GamerPrimaryButton}" Content="⚡ Reiniciar como Admin" Click="BtnRestartAdmin_Click" Margin="10,0,0,0" Padding="10,4"/>
+                <TextBlock VerticalAlignment="Center" Foreground="#FFA0B0" FontSize="12">
+                    <Run Text="⚠️ Atenção: " FontWeight="Bold" Foreground="#FF3355"/>
+                    <Run Text="O aplicativo está a correr sem privilégios de Administrador. Algumas alterações do Registro e Rede requerem elevação."/>
+                </TextBlock>
+            </DockPanel>
+        </Border>
+
+        <!-- 2. TOP HEADER -->
+        <Border Grid.Row="1" Background="#100A0D" BorderBrush="#220D13" BorderThickness="0,0,0,1" Padding="20,0">
+            <Grid>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Background="#FF1E42" CornerRadius="6" Width="32" Height="32" Margin="0,0,12,0">
+                        <TextBlock Text="⚡" FontSize="18" Foreground="#FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="FPSBOOST" FontSize="18" FontWeight="Black" Foreground="#FFFFFF"/>
+                            <TextBlock Text=" PRO" FontSize="18" FontWeight="Black" Foreground="#FF1E42"/>
+                            <Border Background="#280D14" CornerRadius="4" Margin="10,2,0,2" Padding="6,1">
+                                <TextBlock Text="v1.0" FontSize="11" Foreground="#FF3355" FontWeight="Bold"/>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="Otimizador de Desempenho e Latência para Rust, CS2 e PUBG" FontSize="11" Foreground="#9CA3AF"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Live Game Status Badge (Header Right) -->
+                <Border HorizontalAlignment="Right" VerticalAlignment="Center" 
+                        Background="#180D12" BorderBrush="#2E121A" BorderThickness="1" 
+                        CornerRadius="20" Padding="14,6">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse x:Name="GameStatusLed" Width="10" Height="10" Fill="#9CA3AF" Margin="0,0,8,0"/>
+                        <TextBlock x:Name="TxtHeaderGameStatus" Text="Nenhum jogo detetado" Foreground="#9CA3AF" FontSize="12" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 3. MAIN CONTENT: SIDEBAR + PANELS -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT SIDEBAR -->
+            <Border Grid.Column="0" Background="#0C080B" BorderBrush="#1F0B10" BorderThickness="0,0,1,0" Padding="12,16">
+                <DockPanel LastChildFill="False">
+                    <StackPanel DockPanel.Dock="Top">
+                        <TextBlock Text="MENU PRINCIPAL" FontSize="10" FontWeight="Bold" Foreground="#6B7280" Margin="8,0,0,8"/>
+                        
+                        <RadioButton x:Name="NavDashboard" Style="{StaticResource NavTabButton}" IsChecked="True" Checked="Nav_Checked">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📊 " FontSize="14"/>
+                                <TextBlock Text="Painel Geral"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="NavFpsSystem" Style="{StaticResource NavTabButton}" Checked="Nav_Checked">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🚀 " FontSize="14"/>
+                                <TextBlock Text="FPS &amp; Sistema"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="NavPingNetwork" Style="{StaticResource NavTabButton}" Checked="Nav_Checked">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🌐 " FontSize="14"/>
+                                <TextBlock Text="Ping &amp; Latência"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="NavGameConfigs" Style="{StaticResource NavTabButton}" Checked="Nav_Checked">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="⚙️ " FontSize="14"/>
+                                <TextBlock Text="Configs por Jogo"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="NavGameSessions" Style="{StaticResource NavTabButton}" Checked="Nav_Checked">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📜 " FontSize="14"/>
+                                <TextBlock Text="Log dos Jogos"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton x:Name="NavSafetyLogs" Style="{StaticResource NavTabButton}" Checked="Nav_Checked">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🛡️ " FontSize="14"/>
+                                <TextBlock Text="Segurança &amp; Backup"/>
+                            </StackPanel>
+                        </RadioButton>
+                    </StackPanel>
+
+                    <!-- Quick Spec Box at Sidebar Bottom -->
+                    <Border DockPanel.Dock="Bottom" Background="#140C10" BorderBrush="#2A1016" BorderThickness="1" CornerRadius="8" Padding="10">
+                        <StackPanel>
+                            <TextBlock Text="SISTEMA ATUAL" FontSize="9" FontWeight="Bold" Foreground="#FF1E42" Margin="0,0,0,4"/>
+                            <TextBlock x:Name="TxtSidebarCpu" Text="A carregar CPU..." FontSize="11" Foreground="#FFFFFF" TextTrimming="CharacterEllipsis"/>
+                            <TextBlock x:Name="TxtSidebarGpu" Text="A carregar GPU..." FontSize="10" Foreground="#9CA3AF" Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                    </Border>
+                </DockPanel>
+            </Border>
+
+            <!-- RIGHT PANELS CONTAINER -->
+            <Grid Grid.Column="1" Margin="20,16">
+
+                <!-- ==================== PANEL 1: DASHBOARD ==================== -->
+                <ScrollViewer x:Name="PanelDashboard" VerticalScrollBarVisibility="Auto" Visibility="Visible">
+                    <StackPanel>
+                        <!-- Hero Banner: Quick Boost -->
+                        <Border Background="#160E12" BorderBrush="#2E1218" BorderThickness="1" CornerRadius="12" Padding="20" Margin="0,0,0,16">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Otimização Instantânea para Jogos" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="Ajustes calibrados para o teu i5-13600K, RTX 4070 Ti e 32GB RAM: plano de energia, Nagle TCP, prioridade multimídia e correções no Rust/CS2." 
+                                               FontSize="12" Foreground="#9CA3AF" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Hardware Detetado: i5-13600K (14 Cores) • RTX 4070 Ti • 32 GB RAM • SSD 1TB + 2TB" FontSize="11" Foreground="#FF1E42" FontWeight="Bold" Margin="0,6,0,0"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0,0,0">
+                                    <Button Style="{StaticResource GamerPrimaryButton}" 
+                                            Content="🚀 OTIMIZAR AGORA (1-CLIQUE)" 
+                                            Click="BtnQuickBoost_Click" 
+                                            Padding="18,12" FontSize="13" Margin="0,0,0,6"/>
+                                    <Button Style="{StaticResource GamerSecondaryButton}" 
+                                            Content="⚡ Aplicar Otimizações Diretas" 
+                                            Click="BtnApplyHardwareTweaks_Click" 
+                                            Padding="14,6" FontSize="11"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- System Metrics Cards (CPU, RAM, Network) -->
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- RAM Card -->
+                            <Border Grid.Column="0" Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,0,8,0">
+                                <StackPanel>
+                                    <TextBlock Text="MEMÓRIA RAM" FontSize="10" FontWeight="Bold" Foreground="#9CA3AF"/>
+                                    <TextBlock x:Name="TxtDashRamUsage" Text="A calcular..." FontSize="20" FontWeight="Bold" Foreground="#FF1E42" Margin="0,4,0,2"/>
+                                    <ProgressBar x:Name="ProgressRam" Height="6" Value="45" Maximum="100" Margin="0,4,0,8" Foreground="#FF1E42" Background="#240E14" BorderThickness="0"/>
+                                    <Button Style="{StaticResource GamerSecondaryButton}" Content="🧹 Limpar RAM" Click="BtnCleanRam_Click" Padding="6,4" FontSize="11"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Power Plan Card -->
+                            <Border Grid.Column="1" Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="10" Padding="14" Margin="4,0,4,0">
+                                <StackPanel>
+                                    <TextBlock Text="PLANO DE ENERGIA" FontSize="10" FontWeight="Bold" Foreground="#9CA3AF"/>
+                                    <TextBlock x:Name="TxtDashPowerPlan" Text="Elevado desempenho" FontSize="16" FontWeight="Bold" Foreground="#FF1E42" Margin="0,6,0,4" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="Bloqueia frequências de clock da CPU nos jogos." FontSize="11" Foreground="#6B7280" Margin="0,0,0,8"/>
+                                    <Button Style="{StaticResource GamerSecondaryButton}" Content="⚡ Ativar Desempenho Máximo" Click="BtnEnablePowerPlan_Click" Padding="6,4" FontSize="11"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Ping Status Card -->
+                            <Border Grid.Column="2" Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="10" Padding="14" Margin="8,0,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="LATÊNCIA (DNS / CS2)" FontSize="10" FontWeight="Bold" Foreground="#9CA3AF"/>
+                                    <TextBlock x:Name="TxtDashPing" Text="-- ms" FontSize="20" FontWeight="Bold" Foreground="#FF1E42" Margin="0,4,0,2"/>
+                                    <TextBlock Text="Algoritmo de Nagle &amp; Roteamento" FontSize="11" Foreground="#6B7280" Margin="0,0,0,8"/>
+                                    <Button Style="{StaticResource GamerSecondaryButton}" Content="🌐 Testar Latência" Click="BtnTestPing_Click" Padding="6,4" FontSize="11"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Target Games Quick Status -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="10" Padding="16">
+                            <StackPanel>
+                                <TextBlock Text="JOGOS SUPORTADOS COM OTIMIZAÇÃO AUTOMÁTICA" FontSize="12" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Rust Box -->
+                                    <Border Grid.Column="0" Background="#180E13" BorderBrush="#2E1218" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,6,0">
+                                        <StackPanel>
+                                            <TextBlock Text="⚡ RUST" FontSize="13" FontWeight="Bold" Foreground="#FF6633"/>
+                                            <TextBlock Text="Foco: Garbage Collection &amp; RAM" FontSize="10" Foreground="#9CA3AF" Margin="0,2,0,6"/>
+                                            <TextBlock Text="Auto-Boost de Prioridade + Limpeza Preventiva de Standby." FontSize="11" Foreground="#CBD5E1" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- CS2 Box -->
+                                    <Border Grid.Column="1" Background="#180E13" BorderBrush="#2E1218" BorderThickness="1" CornerRadius="8" Padding="12" Margin="3,0,3,0">
+                                        <StackPanel>
+                                            <TextBlock Text="🎯 COUNTER-STRIKE 2" FontSize="13" FontWeight="Bold" Foreground="#FF1E42"/>
+                                            <TextBlock Text="Foco: Sub-tick &amp; Frametimes" FontSize="10" Foreground="#9CA3AF" Margin="0,2,0,6"/>
+                                            <TextBlock Text="Nagle desativado para registo instantâneo de tiros sem atraso." FontSize="11" Foreground="#CBD5E1" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- PUBG Box -->
+                                    <Border Grid.Column="2" Background="#180E13" BorderBrush="#2E1218" BorderThickness="1" CornerRadius="8" Padding="12" Margin="6,0,0,0">
+                                        <StackPanel>
+                                            <TextBlock Text="🪂 PUBG BATTLEGROUNDS" FontSize="13" FontWeight="Bold" Foreground="#FF3355"/>
+                                            <TextBlock Text="Foco: Network Jitter &amp; Cidades" FontSize="10" Foreground="#9CA3AF" Margin="0,2,0,6"/>
+                                            <TextBlock Text="Unthrottled network packets &amp; DX11 Enhanced tweaks." FontSize="11" Foreground="#CBD5E1" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- ==================== PANEL 2: FPS & SISTEMA ==================== -->
+                <ScrollViewer x:Name="PanelFpsSystem" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                    <StackPanel>
+                        <TextBlock Text="Ajustes de FPS e Estabilidade do Sistema" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
+                        <TextBlock Text="Otimizações seguras de Windows que eliminam quedas de quadros (micro-stutter) e liberam o poder máximo da CPU e GPU." FontSize="12" Foreground="#9CA3AF" Margin="0,2,0,14"/>
+
+                        <!-- Tweak 1: Power Plan -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+                            <DockPanel LastChildFill="True">
+                                <Button DockPanel.Dock="Right" Style="{StaticResource GamerSecondaryButton}" Content="Ativar Plano" Click="BtnEnablePowerPlan_Click" VerticalAlignment="Center"/>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="1. Plano de Desempenho Máximo (Ultimate Performance)" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="Impede que o Windows adormeça núcleos da CPU (Core Parking) e mantém as frequências do processador estáveis durante tiroteios." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Tweak 2: Game DVR -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+                            <DockPanel LastChildFill="True">
+                                <Button DockPanel.Dock="Right" Style="{StaticResource GamerSecondaryButton}" Content="Desativar DVR" Click="BtnDisableGameDvr_Click" VerticalAlignment="Center"/>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="2. Desativar Xbox Game DVR &amp; Gravação em Segundo Plano" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="O Windows grava vídeo continuamente no disco em background, consumindo até 20% da GPU e causando travamentos periódicos." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Tweak 3: System Responsiveness -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+                            <DockPanel LastChildFill="True">
+                                <Button DockPanel.Dock="Right" Style="{StaticResource GamerSecondaryButton}" Content="Priorizar Jogos" Click="BtnSystemResponsiveness_Click" VerticalAlignment="Center"/>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="3. Prioridade Multimídia Máxima para Jogos (SystemResponsiveness = 0)" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="Por padrão, o Windows reserva 20% do processador para tarefas em background. Definir como 0 entrega 100% de prioridade para o jogo aberto." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Tweak 4: Mouse Acceleration -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+                            <DockPanel LastChildFill="True">
+                                <Button DockPanel.Dock="Right" Style="{StaticResource GamerSecondaryButton}" Content="Remover Aceleração" Click="BtnDisableMouseAccel_Click" VerticalAlignment="Center"/>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="4. Desativar Aceleração do Rato (Enhanced Pointer Precision)" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="Garante uma relação de mira 1:1 perfeita e consistente, fundamental para o recoil no CS2, Rust e spray no PUBG." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Tweak 5: Temp Cleaner & Shader Cache -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+                            <DockPanel LastChildFill="True">
+                                <Button DockPanel.Dock="Right" Style="{StaticResource GamerSecondaryButton}" Content="Limpar Cache" Click="BtnCleanShaderCache_Click" VerticalAlignment="Center"/>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="5. Limpeza de Arquivos Temporários e Cache de Shaders DirectX" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="Limpa caches corrompidos que geram stuttering após atualizações de drivers de vídeo ou patches de jogos." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Tweak 6: HAGS & GPU Scheduling -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+                            <DockPanel LastChildFill="True">
+                                <Button DockPanel.Dock="Right" Style="{StaticResource GamerSecondaryButton}" Content="Ativar HAGS / GPU" Click="BtnEnableHags_Click" VerticalAlignment="Center"/>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="6. Agendamento de GPU por Hardware (HAGS) &amp; Latência GPU" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="Permite que a RTX 4070 Ti controle diretamente a sua VRAM de 12GB sem passar pelo agendador do Windows. Reduz a latência de renderização e estabiliza os 1% Low FPS em monitores de alta taxa (240Hz)." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- ==================== PANEL 3: PING & REDE ==================== -->
+                <ScrollViewer x:Name="PanelPingNetwork" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                    <StackPanel>
+                        <TextBlock Text="Ajustes de Rede e Redução de Ping" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
+                        <TextBlock Text="Remove atrasos artificiais do protocolo TCP/IP do Windows e otimiza a rota para os servidores de jogo." FontSize="12" Foreground="#9CA3AF" Margin="0,2,0,14"/>
+
+                        <!-- Network Tweak 1: Nagle's Algorithm -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+                            <DockPanel LastChildFill="True">
+                                <Button DockPanel.Dock="Right" Style="{StaticResource GamerSecondaryButton}" Content="Desativar Nagle" Click="BtnDisableNagles_Click" VerticalAlignment="Center"/>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                                    <TextBlock Text="1. Desativar Algoritmo de Nagle (TcpAckFrequency = 1 &amp; TCPNoDelay = 1)" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="O algoritmo de Nagle junta pequenos pacotes para economizar dados, criando atrasos de 20 a 80ms nos comandos do jogo. Ao desativar, cada pacote é enviado instantaneamente." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Network Tweak 2: DNS Presets -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="2. Servidores DNS de Alta Performance e Baixa Latência" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                <TextBlock Text="Servidores DNS mais rápidos diminuem a resolução de rotas e melhoram o ping inicial de conexão." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,10"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Style="{StaticResource GamerSecondaryButton}" Content="Cloudflare (1.1.1.1 - Mais Rápido)" Click="BtnDnsCloudflare_Click" Margin="0,0,8,0"/>
+                                    <Button Style="{StaticResource GamerSecondaryButton}" Content="Google (8.8.8.8 - Confiável)" Click="BtnDnsGoogle_Click" Margin="0,0,8,0"/>
+                                    <Button Style="{StaticResource GamerSecondaryButton}" Content="Automático (DHCP)" Click="BtnDnsDhcp_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Network Actions: Flush & Winsock -->
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="Limpar Cache DNS (Flush)" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="Elimina entradas antigas ou corrompidas de DNS." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,8"/>
+                                    <Button Style="{StaticResource GamerSecondaryButton}" Content="🧹 Limpar DNS Agora" Click="BtnFlushDns_Click"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="6,0,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Redefinir TCP/IP &amp; Winsock" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="Restaura a pilha de rede em caso de perda de pacotes." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,8"/>
+                                    <Button Style="{StaticResource GamerSecondaryButton}" Content="🔄 Redefinir Pilha de Rede" Click="BtnResetWinsock_Click"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Real-Time Ping Diagnostic Tool -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14">
+                            <StackPanel>
+                                <DockPanel LastChildFill="False" Margin="0,0,0,10">
+                                    <TextBlock DockPanel.Dock="Left" Text="Diagnóstico de Latência em Tempo Real (Servidores de Jogo)" FontSize="13" FontWeight="Bold" Foreground="#FF1E42" VerticalAlignment="Center"/>
+                                    <Button DockPanel.Dock="Right" Style="{StaticResource GamerPrimaryButton}" Content="Iniciar Teste de Ping" Click="BtnTestPing_Click" Padding="12,6"/>
+                                </DockPanel>
+                                <TextBlock x:Name="TxtPingStatusNotice" Text="Clique no botão para medir o ping real e variação (jitter) para servidores de CS2, Rust e PUBG." FontSize="11" Foreground="#9CA3AF" Margin="0,0,0,8"/>
+
+                                <!-- Ping Results List -->
+                                <ListBox x:Name="ListPingResults" Background="#0D080A" BorderBrush="#240E14" BorderThickness="1" Foreground="#FFFFFF" Height="140" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="4,4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="220"/>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="110"/>
+                                                    <ColumnDefinition Width="100"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding HostName}" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding AvgPing, StringFormat='Média: {0}ms'}" FontWeight="Bold" Foreground="{Binding StatusColor}"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding Jitter, StringFormat='Jitter: ±{0}ms'}" Foreground="#9CA3AF"/>
+                                                <TextBlock Grid.Column="3" Text="{Binding PacketLossPercent, StringFormat='Perda: {0}%'}" Foreground="#FF1E42"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- ==================== PANEL 4: CONFIGS POR JOGO ==================== -->
+                <ScrollViewer x:Name="PanelGameConfigs" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                    <StackPanel Margin="0,0,10,36">
+                        <TextBlock Text="Configurações Específicas por Jogo" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
+                        <TextBlock Text="Personaliza a prioridade de CPU, limpeza de RAM e parâmetros para cada jogo individualmente." FontSize="12" Foreground="#9CA3AF" Margin="0,2,0,14"/>
+
+                        <!-- Game Selector Bar & New Game Button -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,14">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Selecionar Jogo:" FontWeight="Bold" Foreground="#9CA3AF" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                    <ComboBox x:Name="CmbGameSelector" Width="220" Style="{StaticResource GamerComboBox}" SelectionChanged="CmbGameSelector_SelectionChanged"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <Button Style="{StaticResource GamerPrimaryButton}" Content="➕ Adicionar Novo Jogo" Click="BtnAddNewGame_Click" Padding="10,4" FontSize="11" Margin="0,0,8,0"/>
+                                    <Button x:Name="BtnDeleteGame" Style="{StaticResource GamerDangerButton}" Content="🗑️ Eliminar" Click="BtnDeleteGame_Click" Padding="10,4" FontSize="11"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Config Form Card -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="10" Padding="16">
+                            <StackPanel>
+                                <!-- Basic Info (Name & Process) -->
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                        <TextBlock Text="Nome do Jogo:" FontSize="11" FontWeight="Bold" Foreground="#9CA3AF" Margin="0,0,0,4"/>
+                                        <TextBox x:Name="TxtCfgGameName" Style="{StaticResource GamerTextBox}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                        <TextBlock Text="Nome do Processo Executável (ex: cs2, RustClient, TslGame):" FontSize="11" FontWeight="Bold" Foreground="#9CA3AF" Margin="0,0,0,4"/>
+                                        <TextBox x:Name="TxtCfgProcessName" Style="{StaticResource GamerTextBox}"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Performance Tweaks (Priority, Timer, RAM) -->
+                                <Border Background="#0E090C" BorderBrush="#240E14" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="Ajustes de Desempenho e CPU:" FontSize="12" FontWeight="Bold" Foreground="#FF1E42" Margin="0,0,0,8"/>
+                                        <Grid Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                                <TextBlock Text="Nível de Prioridade da CPU:" FontSize="11" Foreground="#CBD5E1" Margin="0,0,0,4"/>
+                                                <ComboBox x:Name="CmbCfgPriority" Style="{StaticResource GamerComboBox}">
+                                                    <ComboBoxItem Content="Alta" IsSelected="True"/>
+                                                    <ComboBoxItem Content="Acima do Normal"/>
+                                                    <ComboBoxItem Content="Tempo Real"/>
+                                                </ComboBox>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <CheckBox x:Name="ChkCfgTimer" Content="Ativar Timer de Alta Precisão (1.0ms)" Foreground="#CBD5E1" IsChecked="True" Cursor="Hand" Margin="0,16,0,0"/>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <!-- Memory Toggles -->
+                                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                            <CheckBox x:Name="ChkCfgRamLaunch" Content="Limpeza Preventiva de RAM ao Iniciar" Foreground="#CBD5E1" IsChecked="True" Cursor="Hand" Margin="0,0,20,0"/>
+                                            <CheckBox x:Name="ChkCfgPeriodicRam" Content="Limpeza Periódica de RAM a cada" Foreground="#CBD5E1" IsChecked="True" Cursor="Hand" Margin="0,0,6,0"/>
+                                            <TextBox x:Name="TxtCfgPeriodicMinutes" Text="15" Style="{StaticResource GamerTextBox}" Width="45" TextAlignment="Center" Padding="4,2"/>
+                                            <TextBlock Text="minutos" Foreground="#9CA3AF" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Launch Options (Steam) -->
+                                <Border Background="#0E090C" BorderBrush="#240E14" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <DockPanel LastChildFill="False">
+                                            <TextBlock DockPanel.Dock="Left" Text="Opções de Inicialização (Steam Launch Options):" FontSize="11" FontWeight="Bold" Foreground="#FF3355"/>
+                                            <Button DockPanel.Dock="Right" Style="{StaticResource GamerPrimaryButton}" Content="📋 Copiar Parâmetros" Click="BtnCopyLaunch_Click" Padding="10,3" FontSize="11"/>
+                                        </DockPanel>
+                                        <TextBox x:Name="TxtCfgLaunchOptions" Style="{StaticResource GamerTextBox}" Margin="0,6,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Console Commands -->
+                                <Border Background="#0E090C" BorderBrush="#240E14" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <DockPanel LastChildFill="False">
+                                            <TextBlock DockPanel.Dock="Left" Text="Comandos de Consola / Autoexec Recomendados:" FontSize="11" FontWeight="Bold" Foreground="#FF1E42"/>
+                                            <Button DockPanel.Dock="Right" Style="{StaticResource GamerSecondaryButton}" Content="📋 Copiar Comando" Click="BtnCopyConsole_Click" Padding="10,3" FontSize="11"/>
+                                        </DockPanel>
+                                        <TextBox x:Name="TxtCfgConsoleCommands" Style="{StaticResource GamerTextBox}" Margin="0,6,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- In-Game Tips & Settings -->
+                                <Border Background="#0E090C" BorderBrush="#240E14" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,16">
+                                    <StackPanel>
+                                        <TextBlock Text="Dicas de Otimização Gráfica e Definições no Jogo:" FontSize="11" FontWeight="Bold" Foreground="#FFAA00" Margin="0,0,0,4"/>
+                                        <TextBox x:Name="TxtCfgTips" Style="{StaticResource GamerTextBox}" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Save Button -->
+                                <DockPanel LastChildFill="False" Margin="0,8,0,0">
+                                    <Button DockPanel.Dock="Right" Style="{StaticResource GamerPrimaryButton}" Content="💾 Guardar Configuração Deste Jogo" Click="BtnSaveGameConfig_Click" Padding="20,12" FontSize="13"/>
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- ==================== PANEL 5: LOG & HISTÓRICO DE SESSÕES ==================== -->
+                <ScrollViewer x:Name="PanelGameSessions" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                    <StackPanel Margin="0,0,10,36">
+                        <TextBlock Text="Histórico e Log de Sessões de Jogos" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
+                        <TextBlock Text="Acompanha o tempo de jogo, ganho de memória RAM libertada e prioridades aplicadas em cada sessão." FontSize="12" Foreground="#9CA3AF" Margin="0,2,0,14"/>
+
+                        <!-- Metrics Cards (Total Sessions, Play Time, RAM Freed) -->
+                        <Grid Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="TOTAL DE SESSÕES" FontSize="10" FontWeight="Bold" Foreground="#9CA3AF"/>
+                                    <TextBlock x:Name="TxtTotalSessions" Text="0" FontSize="20" FontWeight="Bold" Foreground="#FF1E42" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="3,0,3,0">
+                                <StackPanel>
+                                    <TextBlock Text="ESTADO ATUAL" FontSize="10" FontWeight="Bold" Foreground="#9CA3AF"/>
+                                    <TextBlock x:Name="TxtActiveSessionSummary" Text="Nenhum jogo ativo" FontSize="14" FontWeight="Bold" Foreground="#FF3355" Margin="0,8,0,0" TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2" Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="6,0,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="RAM TOTAL OTIMIZADA" FontSize="10" FontWeight="Bold" Foreground="#9CA3AF"/>
+                                    <TextBlock x:Name="TxtTotalRamFreed" Text="0 MB" FontSize="20" FontWeight="Bold" Foreground="#FF3355" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Sessions Table / List -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="10" Padding="16">
+                            <StackPanel>
+                                <DockPanel LastChildFill="False" Margin="0,0,0,12">
+                                    <TextBlock DockPanel.Dock="Left" Text="Registro Detalhado de Sessões" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                    <Button DockPanel.Dock="Right" Style="{StaticResource GamerDangerButton}" Content="🗑️ Limpar Histórico" Click="BtnClearSessions_Click" Padding="10,4" FontSize="11"/>
+                                </DockPanel>
+
+                                <!-- Table Header -->
+                                <Grid Background="#140B10" Margin="0,0,0,6" Height="28">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="140"/>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="JOGO" FontSize="10" FontWeight="Bold" Foreground="#9CA3AF" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                    <TextBlock Grid.Column="1" Text="INÍCIO" FontSize="10" FontWeight="Bold" Foreground="#9CA3AF" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Text="DURAÇÃO" FontSize="10" FontWeight="Bold" Foreground="#9CA3AF" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="RAM GANHA" FontSize="10" FontWeight="Bold" Foreground="#9CA3AF" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="4" Text="AJUSTES APLICADOS" FontSize="10" FontWeight="Bold" Foreground="#9CA3AF" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <!-- Sessions Items List -->
+                                <ListBox x:Name="ListGameSessions" Background="Transparent" BorderThickness="0" Height="220" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="#0E090C" BorderBrush="#240E14" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,2">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="180"/>
+                                                        <ColumnDefinition Width="140"/>
+                                                        <ColumnDefinition Width="110"/>
+                                                        <ColumnDefinition Width="110"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0" Text="{Binding GameName}" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding StartTime, StringFormat='{}{0:dd/MM HH:mm}'}" Foreground="#9CA3AF"/>
+                                                    <TextBlock Grid.Column="2" Text="{Binding DurationFormatted}" FontWeight="SemiBold" Foreground="{Binding StatusColor}"/>
+                                                    <TextBlock Grid.Column="3" Text="{Binding RamFreedMb, StringFormat='{}+{0:F0} MB'}" FontWeight="Bold" Foreground="#FF3355"/>
+                                                    <TextBlock Grid.Column="4" Text="{Binding Details}" Foreground="#CBD5E1" TextTrimming="CharacterEllipsis"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- ==================== PANEL 6: SEGURANÇA & LOGS ==================== -->
+                <ScrollViewer x:Name="PanelSafetyLogs" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                    <StackPanel>
+                        <TextBlock Text="Segurança, Ponto de Restauração e Histórico" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
+                        <TextBlock Text="Todas as alterações são 100% reversíveis. Crie pontos de restauração a qualquer momento para garantir a integridade do seu Windows." FontSize="12" Foreground="#9CA3AF" Margin="0,2,0,14"/>
+
+                        <!-- Restore Actions -->
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="Ponto de Restauração do Windows" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="Cria um ponto de salvamento oficial no sistema antes de alterar o Registro." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,10"/>
+                                    <Button Style="{StaticResource GamerSecondaryButton}" Content="🛡️ Criar Ponto de Restauração" Click="BtnCreateRestorePoint_Click"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14" Margin="6,0,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Restaurar Padrões de Fábrica do Windows" FontSize="13" FontWeight="Bold" Foreground="#FF3B56"/>
+                                    <TextBlock Text="Desfaz todas as modificações de rede, energia e registro aplicadas pelo app." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,10"/>
+                                    <Button Style="{StaticResource GamerDangerButton}" Content="⏪ Restaurar Tudo aos Padrões" Click="BtnRestoreDefaults_Click"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Log Console -->
+                        <Border Background="#140D11" BorderBrush="#281016" BorderThickness="1" CornerRadius="8" Padding="14">
+                            <StackPanel>
+                                <DockPanel LastChildFill="False" Margin="0,0,0,8">
+                                    <TextBlock DockPanel.Dock="Left" Text="Registro de Ações e Diagnósticos" FontSize="12" FontWeight="Bold" Foreground="#9CA3AF"/>
+                                    <Button DockPanel.Dock="Right" Style="{StaticResource GamerSecondaryButton}" Content="Limpar Log" Click="BtnClearLog_Click" Padding="8,2" FontSize="10"/>
+                                </DockPanel>
+                                <TextBox x:Name="TxtLogConsole" Background="#0A0608" Foreground="#FFB8C6" 
+                                         FontFamily="Consolas, Lucida Console" FontSize="11" 
+                                         BorderBrush="#220C12" BorderThickness="1" 
+                                         Height="180" TextWrapping="Wrap" 
+                                         IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+            </Grid>
+        </Grid>
+
+        <!-- 4. BOTTOM STATUS BAR -->
+        <Border Grid.Row="3" Background="#080608" BorderBrush="#1A090E" BorderThickness="0,1,0,0" Padding="16,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Proteção Ativa: " FontSize="11" Foreground="#9CA3AF"/>
+                    <TextBlock Text="Ligada" FontSize="11" Foreground="#FF1E42" FontWeight="Bold"/>
+                </StackPanel>
+
+                <TextBlock x:Name="TxtStatusBarMessage" Grid.Column="1" Text="Pronto para otimizar jogos." FontSize="11" Foreground="#9CA3AF" 
+                           VerticalAlignment="Center" Margin="20,0" TextTrimming="CharacterEllipsis"/>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="TxtStatusMemorySummary" Text="RAM: -- / -- GB" FontSize="11" Foreground="#CBD5E1"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
