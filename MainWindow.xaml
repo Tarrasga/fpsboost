@@ -5,7 +5,8 @@
         Height="740" Width="1040"
         MinHeight="620" MinWidth="900"
         WindowStartupLocation="CenterScreen"
-        Background="#0A0A0E">
+        Background="#0A0A0E"
+        Icon="app.ico">
 
     <Grid>
         <Grid.RowDefinitions>
