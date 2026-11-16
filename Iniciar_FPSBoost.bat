@@ -12,14 +12,17 @@ echo A verificar permissoes de Administrador...
 net session >nul 2>&1
 if %errorLevel% == 0 (
     echo [OK] Privilegios de Administrador confirmados.
-    if exist "bin\Debug\net6.0-windows\FPSBoostPro.exe" (
-        start "" "bin\Debug\net6.0-windows\FPSBoostPro.exe"
+    if exist "FPSBoostPro.exe" (
+        start "" "FPSBoostPro.exe"
+    ) else if exist "bin\Release\net6.0-windows\win-x64\publish\FPSBoostPro.exe" (
+        start "" "bin\Release\net6.0-windows\win-x64\publish\FPSBoostPro.exe"
     ) else if exist "bin\Release\net6.0-windows\FPSBoostPro.exe" (
         start "" "bin\Release\net6.0-windows\FPSBoostPro.exe"
+    ) else if exist "bin\Debug\net6.0-windows\FPSBoostPro.exe" (
+        start "" "bin\Debug\net6.0-windows\FPSBoostPro.exe"
     ) else (
-        echo [!] Executavel nao encontrado. A compilar projeto...
-        powershell -NoProfile -Command "$env:USERPROFILE = '%~dp0.home'; $env:APPDATA = '%~dp0.appdata'; $env:LOCALAPPDATA = '%~dp0.localappdata'; & 'C:\Program Files\dotnet\dotnet.exe' build -c Release"
-        start "" "bin\Release\net6.0-windows\FPSBoostPro.exe"
+        echo [!] Executavel FPSBoostPro.exe nao encontrado nesta pasta.
+        pause
     )
 ) else (
     echo [i] A solicitar elevacao de Administrador...

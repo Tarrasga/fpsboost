@@ -172,7 +172,7 @@ namespace FPSBoostPro.Core.Tweaks
                 using var key = Registry.LocalMachine.CreateSubKey(graphicsDriversKey);
                 key?.SetValue("HwSchMode", 2, RegistryValueKind.DWord);
 
-                return (true, "Agendamento de GPU por Hardware (HAGS) ativado com sucesso! (Menos latência na RTX 4070 Ti - requer reiniciar o PC)");
+                return (true, "Agendamento de GPU por Hardware (HAGS) ativado com sucesso! (Menor latência de renderização da GPU - requer reiniciar o PC)");
             }
             catch (Exception ex)
             {

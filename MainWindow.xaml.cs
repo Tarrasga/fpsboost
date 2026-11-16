@@ -55,6 +55,7 @@ namespace FPSBoostPro
                 TxtSidebarCpu.Text = specs.CpuName;
                 TxtSidebarGpu.Text = specs.GpuName;
                 TxtDashPowerPlan.Text = specs.ActivePowerPlan;
+                TxtHeroHardware.Text = $"Hardware Detetado: {specs.CpuName} • {specs.GpuName} • {specs.RamInfo.Split('(')[0].Trim()} RAM";
 
                 // 3. Atualiza memória RAM
                 UpdateMemoryStats();
@@ -252,8 +253,11 @@ namespace FPSBoostPro
                 string batPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Aplicar_Otimizacoes_Sistema.bat");
                 if (!System.IO.File.Exists(batPath))
                 {
-                    // Fallback para a pasta do projeto
-                    batPath = @"E:\fpsboost\Aplicar_Otimizacoes_Sistema.bat";
+                    string parentCandidate = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "Aplicar_Otimizacoes_Sistema.bat"));
+                    if (System.IO.File.Exists(parentCandidate))
+                    {
+                        batPath = parentCandidate;
+                    }
                 }
 
                 if (System.IO.File.Exists(batPath))

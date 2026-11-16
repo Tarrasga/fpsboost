@@ -140,9 +140,9 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel VerticalAlignment="Center">
                                     <TextBlock Text="Otimização Instantânea para Jogos" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF"/>
-                                    <TextBlock Text="Ajustes calibrados para o teu i5-13600K, RTX 4070 Ti e 32GB RAM: plano de energia, Nagle TCP, prioridade multimídia e correções no Rust/CS2." 
+                                    <TextBlock x:Name="TxtHeroSubtitle" Text="Ajustes calibrados para o teu sistema: plano de energia de alto desempenho, Nagle TCP, prioridade multimídia e correções no Rust/CS2." 
                                                FontSize="12" Foreground="#9CA3AF" Margin="0,4,0,0" TextWrapping="Wrap"/>
-                                    <TextBlock Text="Hardware Detetado: i5-13600K (14 Cores) • RTX 4070 Ti • 32 GB RAM • SSD 1TB + 2TB" FontSize="11" Foreground="#FF1E42" FontWeight="Bold" Margin="0,6,0,0"/>
+                                    <TextBlock x:Name="TxtHeroHardware" Text="Hardware Detetado: A calcular especificações..." FontSize="11" Foreground="#FF1E42" FontWeight="Bold" Margin="0,6,0,0"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0,0,0">
                                     <Button Style="{StaticResource GamerPrimaryButton}" 
@@ -306,7 +306,7 @@
                                 <Button DockPanel.Dock="Right" Style="{StaticResource GamerSecondaryButton}" Content="Ativar HAGS / GPU" Click="BtnEnableHags_Click" VerticalAlignment="Center"/>
                                 <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
                                     <TextBlock Text="6. Agendamento de GPU por Hardware (HAGS) &amp; Latência GPU" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
-                                    <TextBlock Text="Permite que a RTX 4070 Ti controle diretamente a sua VRAM de 12GB sem passar pelo agendador do Windows. Reduz a latência de renderização e estabiliza os 1% Low FPS em monitores de alta taxa (240Hz)." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                    <TextBlock Text="Permite que a placa gráfica (NVIDIA GeForce / AMD Radeon) controle diretamente a sua VRAM sem passar pelo agendador do Windows. Reduz a latência de renderização e estabiliza os 1% Low FPS em monitores de alta taxa de atualização (144Hz / 240Hz / 360Hz)." FontSize="11" Foreground="#9CA3AF" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                 </StackPanel>
                             </DockPanel>
                         </Border>
